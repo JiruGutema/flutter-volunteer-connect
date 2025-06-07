@@ -60,27 +60,30 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  Future<void> _onSignupRequested(
-    SignupRequested event,
-    Emitter<AuthState> emit,
-  ) async {
-    emit(AuthLoading());
-    try {
-      final response = await authRepository.signup(
-        name: event.name,
-        email: event.email,
-        password: event.password,
-        role: event.role,
-      );
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('token', response['token']);
-      final user = User.fromJson(response['user']);
-      emit(Authenticated(user: user));
-    } catch (e) {
-      emit(AuthError(message: e.toString()));
-      emit(Unauthenticated());
-    }
+Future<void> _onSignupRequested(
+  SignupRequested event,
+  Emitter<AuthState> emit,
+) async {
+  emit(AuthLoading());
+  try {
+    final response = await authRepository.signup(
+      name: event.name,
+      email: event.email,
+      password: event.password,
+      role: event.role,
+    );
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('token', response['token']);
+    
+    // Immediately log out after signup
+    await prefs.remove('token');
+    emit(Unauthenticated());
+    
+  } catch (e) {
+    emit(AuthError(message: e.toString()));
+    emit(Unauthenticated());
   }
+}
 
   Future<void> _onLogoutRequested(
     LogoutRequested event,
