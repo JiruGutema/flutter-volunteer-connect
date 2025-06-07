@@ -32,7 +32,7 @@ class AuthDataSource {
   }) async {
     try {
       final response = await _dio.post(
-        '/auth/signup',
+        '/auth/register',
         data: {
           'name': name,
           'email': email,

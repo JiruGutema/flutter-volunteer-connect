@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:volunter_connect/presentation/screens/signup_screen.dart';
 import '../../application/blocs/auth_bloc.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -41,9 +42,9 @@ class LoginScreen extends StatelessWidget {
             BlocConsumer<AuthBloc, AuthState>(
               listener: (context, state) {
                 if (state is AuthError) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(state.message)),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(state.message)));
                 }
               },
               builder: (context, state) {
@@ -53,11 +54,11 @@ class LoginScreen extends StatelessWidget {
                 return ElevatedButton(
                   onPressed: () {
                     context.read<AuthBloc>().add(
-                          LoginRequested(
-                            email: emailController.text.trim(),
-                            password: passwordController.text.trim(),
-                          ),
-                        );
+                      LoginRequested(
+                        email: emailController.text.trim(),
+                        password: passwordController.text.trim(),
+                      ),
+                    );
                   },
                   child: const Text('Login'),
                 );
@@ -66,8 +67,9 @@ class LoginScreen extends StatelessWidget {
             const SizedBox(height: 10),
             TextButton(
               onPressed: () {
-                // Navigate to signup screen
-                // You can implement this similarly
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (context) => SignupScreen()));
               },
               child: const Text('Don\'t have an account? Sign up'),
             ),
