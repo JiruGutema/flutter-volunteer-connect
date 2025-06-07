@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 async function register(req, res) {
   const { name, email, password } = req.body;
   const role = req.body.role || "volunteer"; 
+  console.log(name, email)
 
   if (!email || !password || !name) {
     return res
