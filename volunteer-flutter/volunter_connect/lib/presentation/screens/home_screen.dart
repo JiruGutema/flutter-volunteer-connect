@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
           "time": "10:00 AM",
           "location": "Addis Ababa, Bole",
           "spotsLeft": 15,
-          "image": "assets/images/image.png",
+          "image": "assets/image.png",
           "description":
               "This is where we strive to save mothers life by denoting blood",
           "requirements": {
@@ -59,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
           "time": "8:00 AM",
           "location": "Mount Kenya National Park",
           "spotsLeft": 5,
-          "image": "assets/images/image.png",
+          "image": "assets/image.png",
           "description":
               "Join us for an adventurous hiking trip to Mount Kenya...",
           "requirements": {
