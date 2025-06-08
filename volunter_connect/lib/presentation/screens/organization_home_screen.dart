@@ -7,16 +7,16 @@ import '../../../application/blocs/events_bloc.dart';
 import '../../../domain/models/user_model.dart';
 import './../widgets/event_card.dart';
 
-class HomeScreen extends StatefulWidget {
+class OrganizationHomeScreen extends StatefulWidget {
   final User user;
 
-  const HomeScreen({super.key, required this.user});
+  const OrganizationHomeScreen({super.key, required this.user});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<OrganizationHomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<OrganizationHomeScreen> {
   @override
   void initState() {
     super.initState();
@@ -89,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Hello, ${widget.user.name}',
+                  'Hello, Organization ${widget.user.name}',
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
