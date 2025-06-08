@@ -9,7 +9,9 @@ import 'package:volunter_connect/infrastructure/data_sources/auth_data_source.da
 import 'package:volunter_connect/infrastructure/data_sources/events_data_source.dart';
 import 'package:volunter_connect/infrastructure/repositories/auth_repository.dart';
 import 'package:volunter_connect/infrastructure/repositories/event_repository.dart';
-import 'package:volunter_connect/presentation/screens/home_screen.dart';
+import 'package:volunter_connect/presentation/screens/volunteer_home_screen.dart';
+import 'package:volunter_connect/presentation/screens/organization_home_screen.dart';
+
 import 'package:volunter_connect/presentation/screens/login_screen.dart';
 
 void main() async {
@@ -84,7 +86,13 @@ class AuthWrapper extends StatelessWidget {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is Authenticated) {
-          return HomeScreen(user: state.user);
+          if(state.user.role == 'Volunteer'){
+          return VolunteerHomeScreen(user: state.user);
+
+          }
+          else{
+            return OrganizationHomeScreen(user: state.user);
+          }
         } else if (state is Unauthenticated) {
           return const LoginScreen();
         }
