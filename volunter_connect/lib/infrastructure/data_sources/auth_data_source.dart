@@ -4,10 +4,26 @@ class AuthDataSource {
   final Dio _dio = Dio(
     BaseOptions(
       baseUrl: 'http://10.0.2.2:5500/api',
-      // connectTimeout: const Duration(seconds: 5),
-      // receiveTimeout: const Duration(seconds: 5),
+      connectTimeout: const Duration(seconds: 20),
+      receiveTimeout: const Duration(seconds: 20),
     ),
   );
+
+  Future<Map<String, dynamic>> getCurrentUser() async {
+    try {
+      final response = await _dio.get(
+        '/auth/me',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer ${_dio.options.headers['Authorization']}',
+          },
+        ),
+      );
+      return response.data;
+    } catch (e) {
+      throw Exception('Failed to get current user: ${e.toString()}');
+    }
+  }
 
   Future<Map<String, dynamic>> login({
     required String email,

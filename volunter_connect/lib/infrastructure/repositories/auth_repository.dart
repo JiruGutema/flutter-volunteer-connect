@@ -1,10 +1,18 @@
-
 import '../data_sources/auth_data_source.dart';
 
 class AuthRepository {
   final AuthDataSource authDataSource;
 
   AuthRepository({required this.authDataSource});
+
+  Future<Map<String, dynamic>> getCurrentUser() async {
+    try {
+      final response = await authDataSource.getCurrentUser();
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
 
   Future<Map<String, dynamic>> login({
     required String email,
