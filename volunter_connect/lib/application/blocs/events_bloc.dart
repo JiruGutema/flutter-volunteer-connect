@@ -2,13 +2,13 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../../../domain/models/event_model.dart';
-import './../../infrastructure/repositories/event_repository.dart';
+import '../../infrastructure/repositories/event_creation_repository.dart';
 
 part 'events_event.dart';
 part 'events_state.dart';
 
 class EventsBloc extends Bloc<EventsEvent, EventsState> {
-  final EventsRepository eventsRepository;
+  final EventRepository eventsRepository;
 
   EventsBloc({required this.eventsRepository}) : super(EventsInitial()) {
     on<LoadEvents>(_onLoadEvents);

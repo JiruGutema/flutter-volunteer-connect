@@ -1,104 +1,97 @@
-
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:volunter_connect/application/blocs/auth_bloc.dart';
+import 'package:volunter_connect/application/blocs/event_creation_bloc.dart';
 import 'package:volunter_connect/application/blocs/events_bloc.dart';
 import 'package:volunter_connect/infrastructure/data_sources/auth_data_source.dart';
-import 'package:volunter_connect/infrastructure/data_sources/events_data_source.dart';
+import 'package:volunter_connect/infrastructure/data_sources/event_creation_data_source.dart';
 import 'package:volunter_connect/infrastructure/repositories/auth_repository.dart';
-import 'package:volunter_connect/infrastructure/repositories/event_repository.dart';
-import 'package:volunter_connect/presentation/screens/volunteer_home_screen.dart';
-import 'package:volunter_connect/presentation/screens/organization_home_screen.dart';
-
+import 'package:volunter_connect/infrastructure/repositories/event_creation_repository.dart';
 import 'package:volunter_connect/presentation/screens/login_screen.dart';
+import 'package:volunter_connect/presentation/screens/organization_home_screen.dart';
+import 'package:volunter_connect/presentation/screens/volunteer_home_screen.dart';
 
 void main() async {
+  // Ensure Flutter is initialized
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize shared preferences
   final prefs = await SharedPreferences.getInstance();
-  
-  runApp(
-    RepositoryProvider<SharedPreferences>.value(
-      value: prefs,
-      child: const MyApp(),
-    ),
-  );
+
+  runApp(VolunteerConnectApp(prefs: prefs));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class VolunteerConnectApp extends StatelessWidget {
+  final SharedPreferences prefs;
+
+  const VolunteerConnectApp({super.key, required this.prefs});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AuthBloc>(
-      create: (context) {
-        final prefs = RepositoryProvider.of<SharedPreferences>(context);
-        final authBloc = AuthBloc(
-          authRepository: AuthRepository(
-            authDataSource: AuthDataSource(),
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider.value(value: prefs),
+        RepositoryProvider(
+          create: (context) => AuthRepository(authDataSource: AuthDataSource()),
+        ),
+        RepositoryProvider(
+          create:
+              (context) => EventRepository(eventDataSource: EventDataSource()),
+        ),
+      ],
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create:
+                (context) => AuthBloc(
+                  authRepository: context.read<AuthRepository>(),
+                  prefs: context.read<SharedPreferences>(),
+                )..add(AuthCheckRequested()),
           ),
-          prefs: prefs,
-        );
-        
-        // Add AuthCheckRequested when the bloc is created
-        authBloc.add(AuthCheckRequested());
-        
-        // Listen for authentication changes to persist state
-        authBloc.stream.listen((state) {
-          if (state is Authenticated) {
-            prefs.setString('user', jsonEncode(state.user.toJson()));
-          } else if (state is Unauthenticated) {
-            prefs.remove('user');
-          }
-        });
-        
-        return authBloc;
-      },
-      child: MaterialApp(
-        title: 'Volunteer App',
-        debugShowCheckedModeBanner: false,
-        home: MultiRepositoryProvider(
-          providers: [
-            RepositoryProvider(
-              create: (context) => EventsRepository(
-                eventsDataSource: EventsDataSource(),
-              ),
-            ),
-          ],
-          child: BlocProvider<EventsBloc>(
-            create: (context) => EventsBloc(
-              eventsRepository: context.read<EventsRepository>(),
-            ),
-            child: const AuthWrapper(),
+          BlocProvider(
+            create:
+                (context) => EventsBloc(
+                  eventsRepository: context.read<EventRepository>(),
+                ),
           ),
+          BlocProvider(
+            create:
+                (context) => EventCreationBloc(
+                  eventRepository: context.read<EventRepository>(),
+                ),
+          ),
+        ],
+        child: MaterialApp(
+          title: 'Volunteer Connect',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+          ),
+          home: const AppRouter(),
         ),
       ),
     );
   }
 }
 
-class AuthWrapper extends StatelessWidget {
-  const AuthWrapper({super.key});
+class AppRouter extends StatelessWidget {
+  const AppRouter({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is Authenticated) {
-          if(state.user.role == 'Volunteer'){
-          return VolunteerHomeScreen(user: state.user);
-
-          }
-          else{
-            return OrganizationHomeScreen(user: state.user);
-          }
+          // Route based on user role
+          return state.user.role == 'Volunteer'
+              ? VolunteerHomeScreen(user: state.user)
+              : OrganizationHomeScreen(user: state.user);
         } else if (state is Unauthenticated) {
           return const LoginScreen();
         }
-        return const Scaffold(
-          body: Center(child: CircularProgressIndicator()),
-        );
+        return const Scaffold(body: Center(child: CircularProgressIndicator()));
       },
     );
   }

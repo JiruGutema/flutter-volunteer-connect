@@ -1,11 +1,14 @@
 // presentation/screens/home/home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:volunter_connect/application/blocs/event_creation_bloc.dart';
 import 'package:volunter_connect/domain/models/event_model.dart';
+import 'package:volunter_connect/infrastructure/repositories/event_creation_repository.dart';
+import 'package:volunter_connect/presentation/screens/create_event_screen.dart';
 import '../../../application/blocs/auth_bloc.dart';
 import '../../../application/blocs/events_bloc.dart';
 import '../../../domain/models/user_model.dart';
-import './../widgets/event_card.dart';
+import '../widgets/event_card.dart';
 
 class OrganizationHomeScreen extends StatefulWidget {
   final User user;
@@ -17,6 +20,14 @@ class OrganizationHomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<OrganizationHomeScreen> {
+  int _currentIndex = 0;
+
+  // void _onTabTapped(int index) {
+  //   setState(() {
+  //     _currentIndex = index;
+  //   });
+  // }
+
   @override
   void initState() {
     super.initState();
@@ -49,30 +60,39 @@ class _HomeScreenState extends State<OrganizationHomeScreen> {
           return const Center(child: CircularProgressIndicator());
         },
       ),
+      // Update the bottom navigation bar in OrganizationHomeScreen
       bottomNavigationBar: BottomNavigationBar(
         items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+            icon: Icon(Icons.create),
+            label: 'Create Post',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.explore),
-            label: 'Explore',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'My Application',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'My Events'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
-        currentIndex: 0,
+        currentIndex: _currentIndex,
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
         onTap: (index) {
-          // Handle navigation
+          setState(() {
+            _currentIndex = index;
+          });
+          if (index == 1) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (context) => BlocProvider(
+                      create:
+                          (context) => EventCreationBloc(
+                            eventRepository: context.read<EventRepository>(),
+                          ),
+                      child: CreateEventScreen(user: widget.user),
+                    ),
+              ),
+            );
+          }
         },
       ),
     );
@@ -107,10 +127,7 @@ class _HomeScreenState extends State<OrganizationHomeScreen> {
             padding: EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
               'Ongoing',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
           const SizedBox(height: 8),
@@ -136,10 +153,7 @@ class _HomeScreenState extends State<OrganizationHomeScreen> {
             padding: EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
               'Upcoming events',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
           const SizedBox(height: 8),
