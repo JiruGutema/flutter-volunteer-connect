@@ -4,14 +4,11 @@ import 'package:dio/dio.dart';
 class EventsDataSource {
   final Dio _dio;
 
-  EventsDataSource()
-    : _dio = Dio(
-        BaseOptions(
-          baseUrl: 'http://10.0.2.2:5500/api', // Update with your API URL
-          connectTimeout: const Duration(seconds: 20),
-          receiveTimeout: const Duration(seconds: 20),
-        ),
-      );
+  EventsDataSource() : _dio = Dio(BaseOptions(
+    baseUrl: 'http://10.0.2.2:5500/api', // Update with your API URL
+    connectTimeout: const Duration(seconds: 5),
+    receiveTimeout: const Duration(seconds: 5),
+  ));
 
   Future<Map<String, dynamic>> getEvents() async {
     try {
@@ -26,4 +23,3 @@ class EventsDataSource {
     }
   }
 }
-

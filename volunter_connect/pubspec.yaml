@@ -36,8 +36,6 @@ dependencies:
   shared_preferences: ^2.2.2
   intl: ^0.18.1
   bloc: ^8.1.4
-  http: ^1.2.0
-  image_picker: ^1.1.2
 
 
 dev_dependencies:

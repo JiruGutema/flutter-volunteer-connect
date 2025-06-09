@@ -5,6 +5,7 @@ const { v4: uuidv4 } = require("uuid");
 const {getBase64ImageFromUrl} = require("../utils/serveImage");
 const db = require("../config/db");
 
+
 async function createEvent(req, res) {
   const authHeader = req.headers.authorization;
   
@@ -20,9 +21,11 @@ async function createEvent(req, res) {
     const org_role = decoded.role; 
     console.log(org_role)
 
-    if (org_role !== 'Organization') {
+    if (org_role !== 'organization') {
       return res.status(StatusCodes.FORBIDDEN).json({ message: "Only organizations can create events" });
     }
+
+  
 
 const { 
   title, subtitle, category, date, time, location,
