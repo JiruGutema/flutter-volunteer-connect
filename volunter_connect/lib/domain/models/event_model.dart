@@ -15,7 +15,6 @@ class Event {
   final String contactPhone;
   final String contactEmail;
   final String contactTelegram;
-  final String? image; // Optional image property
 
   Event({
     required this.id,
@@ -32,7 +31,6 @@ class Event {
     required this.contactPhone,
     required this.contactEmail,
     required this.contactTelegram,
-    this.image, // Optional, defaults to null
   });
 
   factory Event.fromJson(Map<String, dynamic> json) {
@@ -51,7 +49,6 @@ class Event {
       contactPhone: json['contactPhone'].toString(),
       contactEmail: json['contactEmail'].toString(),
       contactTelegram: json['contactTelegram'].toString(),
-      image: json['image']?.toString(), // Handles null
     );
   }
 
@@ -73,25 +70,5 @@ class Event {
       }
     }
     return {};
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'title': title,
-      'subtitle': subtitle,
-      'category': category,
-      'date': date,
-      'time': time,
-      'location': location,
-      'spotsLeft': spotsLeft,
-      'description': description,
-      'requirements': requirements,
-      'additionalInfo': additionalInfo,
-      'contactPhone': contactPhone,
-      'contactEmail': contactEmail,
-      'contactTelegram': contactTelegram,
-      'image': image, // Include in JSON
-    };
   }
 }
